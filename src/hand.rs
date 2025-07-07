@@ -6,6 +6,12 @@ pub struct Hand {
     cards: Vec<Card>,
 }
 
+impl Default for Hand {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Hand {
     pub fn new() -> Self {
         Hand { cards: Vec::new() }
@@ -55,8 +61,7 @@ impl fmt::Display for Hand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use crate::display::{render_card, render_cards_horizontal};
 
-        let card_renders: Vec<Vec<String>> =
-            self.cards.iter().map(|card| render_card(card)).collect();
+        let card_renders: Vec<Vec<String>> = self.cards.iter().map(render_card).collect();
 
         let cards_display = render_cards_horizontal(&card_renders);
         write!(f, "{}\nTotal: {}", cards_display, self.value())

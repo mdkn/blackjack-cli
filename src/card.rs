@@ -73,7 +73,7 @@ impl fmt::Display for Card {
             Suit::Spades => "♠",
         };
 
-        write!(f, "{}{}", rank_str, suit_str)
+        write!(f, "{rank_str}{suit_str}")
     }
 }
 

@@ -14,6 +14,12 @@ pub struct Game {
     pub(crate) current_bet: u32,
 }
 
+impl Default for Game {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Game {
     pub fn new() -> Self {
         let mut deck = Deck::new();
@@ -94,7 +100,7 @@ impl Game {
             }
 
             let cards_display = render_cards_horizontal(&dealer_cards);
-            println!("{}", cards_display);
+            println!("{cards_display}");
         } else {
             println!("{}", self.dealer_hand);
         }
@@ -123,7 +129,7 @@ impl Game {
                 "h" | "hit" => {
                     if let Some(card) = self.deck.deal() {
                         self.player_hand.add_card(card);
-                        println!("You drew: {}", card);
+                        println!("You drew: {card}");
                         self.display_hands(true);
                     }
                 }
@@ -137,7 +143,7 @@ impl Game {
         while self.dealer_hand.value() < 17 {
             if let Some(card) = self.deck.deal() {
                 self.dealer_hand.add_card(card);
-                println!("Dealer drew: {}", card);
+                println!("Dealer drew: {card}");
             }
         }
     }

@@ -24,7 +24,7 @@ pub fn render_card(card: &Card) -> Vec<String> {
         crate::card::Suit::Spades => "♠",
     };
 
-    let content = format!("{}{}", rank_str, suit_str);
+    let content = format!("{rank_str}{suit_str}");
 
     vec![
         "╔═══╗".to_string(),
