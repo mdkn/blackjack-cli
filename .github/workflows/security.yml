@@ -78,7 +78,7 @@ jobs:
       run: cargo geiger --format GitHubMarkdown --output-file geiger-report.md || true
     
     - name: Upload geiger report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: geiger-report
         path: geiger-report.md
