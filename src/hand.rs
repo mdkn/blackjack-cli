@@ -257,7 +257,7 @@ mod tests {
             rank: Rank::King,
         });
 
-        let display = format!("{}", hand);
+        let display = format!("{hand}");
         // Test that it contains the expected cards and value
         assert!(display.contains("A♥"));
         assert!(display.contains("K♦"));
