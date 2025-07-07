@@ -83,27 +83,154 @@ mod tests {
 
     #[test]
     fn test_card_value() {
-        assert_eq!(Card { suit: Suit::Hearts, rank: Rank::Ace }.value(), 11);
-        assert_eq!(Card { suit: Suit::Diamonds, rank: Rank::Two }.value(), 2);
-        assert_eq!(Card { suit: Suit::Clubs, rank: Rank::Three }.value(), 3);
-        assert_eq!(Card { suit: Suit::Spades, rank: Rank::Four }.value(), 4);
-        assert_eq!(Card { suit: Suit::Hearts, rank: Rank::Five }.value(), 5);
-        assert_eq!(Card { suit: Suit::Diamonds, rank: Rank::Six }.value(), 6);
-        assert_eq!(Card { suit: Suit::Clubs, rank: Rank::Seven }.value(), 7);
-        assert_eq!(Card { suit: Suit::Spades, rank: Rank::Eight }.value(), 8);
-        assert_eq!(Card { suit: Suit::Hearts, rank: Rank::Nine }.value(), 9);
-        assert_eq!(Card { suit: Suit::Diamonds, rank: Rank::Ten }.value(), 10);
-        assert_eq!(Card { suit: Suit::Clubs, rank: Rank::Jack }.value(), 10);
-        assert_eq!(Card { suit: Suit::Spades, rank: Rank::Queen }.value(), 10);
-        assert_eq!(Card { suit: Suit::Hearts, rank: Rank::King }.value(), 10);
+        assert_eq!(
+            Card {
+                suit: Suit::Hearts,
+                rank: Rank::Ace
+            }
+            .value(),
+            11
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Diamonds,
+                rank: Rank::Two
+            }
+            .value(),
+            2
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Clubs,
+                rank: Rank::Three
+            }
+            .value(),
+            3
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Spades,
+                rank: Rank::Four
+            }
+            .value(),
+            4
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Hearts,
+                rank: Rank::Five
+            }
+            .value(),
+            5
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Diamonds,
+                rank: Rank::Six
+            }
+            .value(),
+            6
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Clubs,
+                rank: Rank::Seven
+            }
+            .value(),
+            7
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Spades,
+                rank: Rank::Eight
+            }
+            .value(),
+            8
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Hearts,
+                rank: Rank::Nine
+            }
+            .value(),
+            9
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Diamonds,
+                rank: Rank::Ten
+            }
+            .value(),
+            10
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Clubs,
+                rank: Rank::Jack
+            }
+            .value(),
+            10
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Spades,
+                rank: Rank::Queen
+            }
+            .value(),
+            10
+        );
+        assert_eq!(
+            Card {
+                suit: Suit::Hearts,
+                rank: Rank::King
+            }
+            .value(),
+            10
+        );
     }
 
     #[test]
     fn test_card_display() {
-        assert_eq!(format!("{}", Card { suit: Suit::Hearts, rank: Rank::Ace }), "A♥");
-        assert_eq!(format!("{}", Card { suit: Suit::Diamonds, rank: Rank::King }), "K♦");
-        assert_eq!(format!("{}", Card { suit: Suit::Clubs, rank: Rank::Ten }), "10♣");
-        assert_eq!(format!("{}", Card { suit: Suit::Spades, rank: Rank::Two }), "2♠");
+        assert_eq!(
+            format!(
+                "{}",
+                Card {
+                    suit: Suit::Hearts,
+                    rank: Rank::Ace
+                }
+            ),
+            "A♥"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                Card {
+                    suit: Suit::Diamonds,
+                    rank: Rank::King
+                }
+            ),
+            "K♦"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                Card {
+                    suit: Suit::Clubs,
+                    rank: Rank::Ten
+                }
+            ),
+            "10♣"
+        );
+        assert_eq!(
+            format!(
+                "{}",
+                Card {
+                    suit: Suit::Spades,
+                    rank: Rank::Two
+                }
+            ),
+            "2♠"
+        );
     }
 
     #[test]

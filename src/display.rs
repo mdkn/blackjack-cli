@@ -25,7 +25,7 @@ pub fn render_card(card: &Card) -> Vec<String> {
     };
 
     let content = format!("{}{}", rank_str, suit_str);
-    
+
     vec![
         "╔═══╗".to_string(),
         format!("║{:<3}║", content),
@@ -70,7 +70,10 @@ mod tests {
 
     #[test]
     fn test_render_card() {
-        let card = Card { suit: Suit::Hearts, rank: Rank::Ace };
+        let card = Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        };
         let rendered = render_card(&card);
         assert_eq!(rendered[0], "╔═══╗");
         assert_eq!(rendered[1], "║A♥ ║");
@@ -79,7 +82,10 @@ mod tests {
 
     #[test]
     fn test_render_card_ten() {
-        let card = Card { suit: Suit::Spades, rank: Rank::Ten };
+        let card = Card {
+            suit: Suit::Spades,
+            rank: Rank::Ten,
+        };
         let rendered = render_card(&card);
         assert_eq!(rendered[1], "║10♠║");
     }
@@ -94,12 +100,18 @@ mod tests {
 
     #[test]
     fn test_render_cards_horizontal() {
-        let card1 = render_card(&Card { suit: Suit::Hearts, rank: Rank::Ace });
-        let card2 = render_card(&Card { suit: Suit::Spades, rank: Rank::King });
-        
+        let card1 = render_card(&Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        let card2 = render_card(&Card {
+            suit: Suit::Spades,
+            rank: Rank::King,
+        });
+
         let result = render_cards_horizontal(&[card1, card2]);
         let lines: Vec<&str> = result.lines().collect();
-        
+
         assert_eq!(lines[0], "╔═══╗ ╔═══╗");
         assert_eq!(lines[1], "║A♥ ║ ║K♠ ║");
         assert_eq!(lines[2], "╚═══╝ ╚═══╝");

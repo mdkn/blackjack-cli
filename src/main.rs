@@ -1,8 +1,8 @@
 mod card;
 mod deck;
-mod hand;
-mod game;
 mod display;
+mod game;
+mod hand;
 
 use game::Game;
 

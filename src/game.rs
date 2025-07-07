@@ -29,7 +29,10 @@ impl Game {
 
     fn place_bet(&mut self) -> bool {
         loop {
-            print!("You have {} chips. Enter your bet (or 0 to quit): ", self.player_chips);
+            print!(
+                "You have {} chips. Enter your bet (or 0 to quit): ",
+                self.player_chips
+            );
             io::stdout().flush().unwrap();
 
             let mut input = String::new();
@@ -40,7 +43,7 @@ impl Game {
                     continue;
                 }
             }
-            
+
             match input.trim().parse::<u32>() {
                 Ok(0) => return false,
                 Ok(bet) if bet <= self.player_chips => {
@@ -74,22 +77,22 @@ impl Game {
     }
 
     fn display_hands(&self, hide_dealer_card: bool) {
-        use crate::display::{render_card, render_hidden_card, render_cards_horizontal};
-        
+        use crate::display::{render_card, render_cards_horizontal, render_hidden_card};
+
         println!("\n=== Your Hand ===");
         println!("{}", self.player_hand);
-        
+
         println!("\n=== Dealer's Hand ===");
         if hide_dealer_card {
             let mut dealer_cards = Vec::new();
             dealer_cards.push(render_hidden_card());
-            
+
             if self.dealer_hand.cards().len() > 1 {
                 for card in &self.dealer_hand.cards()[1..] {
                     dealer_cards.push(render_card(card));
                 }
             }
-            
+
             let cards_display = render_cards_horizontal(&dealer_cards);
             println!("{}", cards_display);
         } else {
@@ -224,7 +227,7 @@ mod tests {
     fn test_deal_initial_cards() {
         let mut game = Game::new();
         game.deal_initial_cards();
-        
+
         assert_eq!(game.player_hand.cards().len(), 2);
         assert_eq!(game.dealer_hand.cards().len(), 2);
     }
@@ -232,14 +235,20 @@ mod tests {
     #[test]
     fn test_dealer_hits_on_soft_17() {
         let mut game = Game::new();
-        
+
         // Set up dealer hand with 16
-        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
-        game.dealer_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Six });
-        
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ten,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Six,
+        });
+
         let initial_hand_size = game.dealer_hand.cards().len();
         game.dealer_turn();
-        
+
         // Dealer should have drawn at least one more card
         assert!(game.dealer_hand.cards().len() > initial_hand_size);
         assert!(game.dealer_hand.value() >= 17);
@@ -248,14 +257,20 @@ mod tests {
     #[test]
     fn test_dealer_stands_on_17_or_higher() {
         let mut game = Game::new();
-        
+
         // Set up dealer hand with 17
-        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
-        game.dealer_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Seven });
-        
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ten,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Seven,
+        });
+
         let initial_hand_size = game.dealer_hand.cards().len();
         game.dealer_turn();
-        
+
         // Dealer should not have drawn any more cards
         assert_eq!(game.dealer_hand.cards().len(), initial_hand_size);
     }
@@ -265,16 +280,31 @@ mod tests {
         let mut game = Game::new();
         game.current_bet = 100;
         let initial_chips = game.player_chips;
-        
+
         // Player busts
-        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::King });
-        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Queen });
-        game.player_hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Five });
-        
+        game.player_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::King,
+        });
+        game.player_hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Queen,
+        });
+        game.player_hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Five,
+        });
+
         // Dealer has valid hand
-        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::Ten });
-        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Seven });
-        
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Spades,
+            rank: Rank::Ten,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Seven,
+        });
+
         game.determine_winner();
         assert_eq!(game.player_chips, initial_chips - game.current_bet);
     }
@@ -284,16 +314,31 @@ mod tests {
         let mut game = Game::new();
         game.current_bet = 100;
         let initial_chips = game.player_chips;
-        
+
         // Player has valid hand
-        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
-        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Nine });
-        
+        game.player_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ten,
+        });
+        game.player_hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Nine,
+        });
+
         // Dealer busts
-        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::King });
-        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Queen });
-        game.dealer_hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Five });
-        
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Spades,
+            rank: Rank::King,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Queen,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Five,
+        });
+
         game.determine_winner();
         assert_eq!(game.player_chips, initial_chips + game.current_bet);
     }
@@ -303,17 +348,32 @@ mod tests {
         let mut game = Game::new();
         game.current_bet = 100;
         let initial_chips = game.player_chips;
-        
+
         // Player has blackjack
-        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
-        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::King });
-        
+        game.player_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        game.player_hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::King,
+        });
+
         // Dealer has 20
-        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::King });
-        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Queen });
-        
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Spades,
+            rank: Rank::King,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Queen,
+        });
+
         game.determine_winner();
-        assert_eq!(game.player_chips, initial_chips + (game.current_bet * 3) / 2);
+        assert_eq!(
+            game.player_chips,
+            initial_chips + (game.current_bet * 3) / 2
+        );
     }
 
     #[test]
@@ -321,14 +381,26 @@ mod tests {
         let mut game = Game::new();
         game.current_bet = 100;
         let initial_chips = game.player_chips;
-        
+
         // Both have 20
-        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::King });
-        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Queen });
-        
-        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::Ten });
-        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
-        
+        game.player_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::King,
+        });
+        game.player_hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Queen,
+        });
+
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Spades,
+            rank: Rank::Ten,
+        });
+        game.dealer_hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ten,
+        });
+
         game.determine_winner();
         assert_eq!(game.player_chips, initial_chips); // No change in chips
     }
@@ -336,15 +408,15 @@ mod tests {
     #[test]
     fn test_deck_reshuffles_when_low() {
         let mut game = Game::new();
-        
+
         // Deal most of the deck
         for _ in 0..23 {
             game.deck.deal();
             game.deck.deal();
         }
-        
+
         assert!(game.deck.cards_remaining() < 10);
-        
+
         // This would trigger a reshuffle in play_round, but we can't test play_round
         // due to I/O operations. Instead, we just verify the condition is correct.
     }

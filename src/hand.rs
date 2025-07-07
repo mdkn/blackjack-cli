@@ -54,11 +54,10 @@ impl Hand {
 impl fmt::Display for Hand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use crate::display::{render_card, render_cards_horizontal};
-        
-        let card_renders: Vec<Vec<String>> = self.cards.iter()
-            .map(|card| render_card(card))
-            .collect();
-        
+
+        let card_renders: Vec<Vec<String>> =
+            self.cards.iter().map(|card| render_card(card)).collect();
+
         let cards_display = render_cards_horizontal(&card_renders);
         write!(f, "{}\nTotal: {}", cards_display, self.value())
     }
@@ -79,8 +78,11 @@ mod tests {
     #[test]
     fn test_add_card() {
         let mut hand = Hand::new();
-        let card = Card { suit: Suit::Hearts, rank: Rank::King };
-        
+        let card = Card {
+            suit: Suit::Hearts,
+            rank: Rank::King,
+        };
+
         hand.add_card(card);
         assert_eq!(hand.cards().len(), 1);
         assert_eq!(hand.value(), 10);
@@ -89,75 +91,132 @@ mod tests {
     #[test]
     fn test_hand_value_simple() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Five });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Seven });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Five,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Seven,
+        });
+
         assert_eq!(hand.value(), 12);
     }
 
     #[test]
     fn test_ace_high_value() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Nine });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Nine,
+        });
+
         assert_eq!(hand.value(), 20); // Ace counts as 11
     }
 
     #[test]
     fn test_ace_low_value() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::King });
-        hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Five });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::King,
+        });
+        hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Five,
+        });
+
         assert_eq!(hand.value(), 16); // Ace counts as 1 to avoid bust
     }
 
     #[test]
     fn test_multiple_aces() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Ace });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Ace,
+        });
+
         assert_eq!(hand.value(), 12); // One Ace as 11, one as 1
-        
-        hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Nine });
+
+        hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Nine,
+        });
         assert_eq!(hand.value(), 21); // Both Aces as 1
     }
 
     #[test]
     fn test_is_busted() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::King });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Queen });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::King,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Queen,
+        });
+
         assert!(!hand.is_busted());
-        
-        hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Five });
+
+        hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Five,
+        });
         assert!(hand.is_busted());
     }
 
     #[test]
     fn test_is_blackjack() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::King });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::King,
+        });
+
         assert!(hand.is_blackjack());
-        
+
         // Not blackjack with 3 cards even if value is 21
-        hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Two });
+        hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Two,
+        });
         assert!(!hand.is_blackjack());
     }
 
     #[test]
     fn test_not_blackjack_with_21_in_3_cards() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Seven });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Seven });
-        hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Seven });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Seven,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Seven,
+        });
+        hand.add_card(Card {
+            suit: Suit::Clubs,
+            rank: Rank::Seven,
+        });
+
         assert_eq!(hand.value(), 21);
         assert!(!hand.is_blackjack());
     }
@@ -165,11 +224,17 @@ mod tests {
     #[test]
     fn test_clear_hand() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::King });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Queen });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::King,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::Queen,
+        });
+
         assert_eq!(hand.cards().len(), 2);
-        
+
         hand.clear();
         assert_eq!(hand.cards().len(), 0);
         assert_eq!(hand.value(), 0);
@@ -178,9 +243,15 @@ mod tests {
     #[test]
     fn test_hand_display() {
         let mut hand = Hand::new();
-        hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
-        hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::King });
-        
+        hand.add_card(Card {
+            suit: Suit::Hearts,
+            rank: Rank::Ace,
+        });
+        hand.add_card(Card {
+            suit: Suit::Diamonds,
+            rank: Rank::King,
+        });
+
         let display = format!("{}", hand);
         // Test that it contains the expected cards and value
         assert!(display.contains("A♥"));
