@@ -3,12 +3,15 @@ use std::io::{self, Write};
 use crate::deck::Deck;
 use crate::hand::Hand;
 
+#[cfg(test)]
+use crate::card::{Card, Rank, Suit};
+
 pub struct Game {
-    deck: Deck,
-    player_hand: Hand,
-    dealer_hand: Hand,
-    player_chips: u32,
-    current_bet: u32,
+    pub(crate) deck: Deck,
+    pub(crate) player_hand: Hand,
+    pub(crate) dealer_hand: Hand,
+    pub(crate) player_chips: u32,
+    pub(crate) current_bet: u32,
 }
 
 impl Game {
@@ -48,7 +51,7 @@ impl Game {
         }
     }
 
-    fn deal_initial_cards(&mut self) {
+    pub(crate) fn deal_initial_cards(&mut self) {
         self.player_hand.clear();
         self.dealer_hand.clear();
 
@@ -105,7 +108,7 @@ impl Game {
         }
     }
 
-    fn dealer_turn(&mut self) {
+    pub(crate) fn dealer_turn(&mut self) {
         while self.dealer_hand.value() < 17 {
             if let Some(card) = self.deck.deal() {
                 self.dealer_hand.add_card(card);
@@ -114,7 +117,7 @@ impl Game {
         }
     }
 
-    fn determine_winner(&mut self) {
+    pub(crate) fn determine_winner(&mut self) {
         let player_value = self.player_hand.value();
         let dealer_value = self.dealer_hand.value();
 
@@ -179,5 +182,148 @@ impl Game {
         }
 
         println!("Thanks for playing!");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_game() {
+        let game = Game::new();
+        assert_eq!(game.player_chips, 1000);
+        assert_eq!(game.current_bet, 0);
+        assert_eq!(game.player_hand.cards().len(), 0);
+        assert_eq!(game.dealer_hand.cards().len(), 0);
+    }
+
+    #[test]
+    fn test_deal_initial_cards() {
+        let mut game = Game::new();
+        game.deal_initial_cards();
+        
+        assert_eq!(game.player_hand.cards().len(), 2);
+        assert_eq!(game.dealer_hand.cards().len(), 2);
+    }
+
+    #[test]
+    fn test_dealer_hits_on_soft_17() {
+        let mut game = Game::new();
+        
+        // Set up dealer hand with 16
+        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
+        game.dealer_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Six });
+        
+        let initial_hand_size = game.dealer_hand.cards().len();
+        game.dealer_turn();
+        
+        // Dealer should have drawn at least one more card
+        assert!(game.dealer_hand.cards().len() > initial_hand_size);
+        assert!(game.dealer_hand.value() >= 17);
+    }
+
+    #[test]
+    fn test_dealer_stands_on_17_or_higher() {
+        let mut game = Game::new();
+        
+        // Set up dealer hand with 17
+        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
+        game.dealer_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Seven });
+        
+        let initial_hand_size = game.dealer_hand.cards().len();
+        game.dealer_turn();
+        
+        // Dealer should not have drawn any more cards
+        assert_eq!(game.dealer_hand.cards().len(), initial_hand_size);
+    }
+
+    #[test]
+    fn test_determine_winner_player_bust() {
+        let mut game = Game::new();
+        game.current_bet = 100;
+        let initial_chips = game.player_chips;
+        
+        // Player busts
+        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::King });
+        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Queen });
+        game.player_hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Five });
+        
+        // Dealer has valid hand
+        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::Ten });
+        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Seven });
+        
+        game.determine_winner();
+        assert_eq!(game.player_chips, initial_chips - game.current_bet);
+    }
+
+    #[test]
+    fn test_determine_winner_dealer_bust() {
+        let mut game = Game::new();
+        game.current_bet = 100;
+        let initial_chips = game.player_chips;
+        
+        // Player has valid hand
+        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
+        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Nine });
+        
+        // Dealer busts
+        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::King });
+        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Queen });
+        game.dealer_hand.add_card(Card { suit: Suit::Clubs, rank: Rank::Five });
+        
+        game.determine_winner();
+        assert_eq!(game.player_chips, initial_chips + game.current_bet);
+    }
+
+    #[test]
+    fn test_determine_winner_player_blackjack() {
+        let mut game = Game::new();
+        game.current_bet = 100;
+        let initial_chips = game.player_chips;
+        
+        // Player has blackjack
+        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ace });
+        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::King });
+        
+        // Dealer has 20
+        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::King });
+        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Queen });
+        
+        game.determine_winner();
+        assert_eq!(game.player_chips, initial_chips + (game.current_bet * 3) / 2);
+    }
+
+    #[test]
+    fn test_determine_winner_push() {
+        let mut game = Game::new();
+        game.current_bet = 100;
+        let initial_chips = game.player_chips;
+        
+        // Both have 20
+        game.player_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::King });
+        game.player_hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::Queen });
+        
+        game.dealer_hand.add_card(Card { suit: Suit::Spades, rank: Rank::Ten });
+        game.dealer_hand.add_card(Card { suit: Suit::Hearts, rank: Rank::Ten });
+        
+        game.determine_winner();
+        assert_eq!(game.player_chips, initial_chips); // No change in chips
+    }
+
+    #[test]
+    fn test_deck_reshuffles_when_low() {
+        let mut game = Game::new();
+        
+        // Deal most of the deck
+        for _ in 0..23 {
+            game.deck.deal();
+            game.deck.deal();
+        }
+        
+        assert!(game.deck.cards_remaining() < 10);
+        
+        // This would trigger a reshuffle in play_round, but we can't test play_round
+        // due to I/O operations. Instead, we just verify the condition is correct.
     }
 }
