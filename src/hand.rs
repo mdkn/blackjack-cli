@@ -53,13 +53,14 @@ impl Hand {
 
 impl fmt::Display for Hand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for (i, card) in self.cards.iter().enumerate() {
-            if i > 0 {
-                write!(f, " ")?;
-            }
-            write!(f, "{}", card)?;
-        }
-        write!(f, " ({})", self.value())
+        use crate::display::{render_card, render_cards_horizontal};
+        
+        let card_renders: Vec<Vec<String>> = self.cards.iter()
+            .map(|card| render_card(card))
+            .collect();
+        
+        let cards_display = render_cards_horizontal(&card_renders);
+        write!(f, "{}\nTotal: {}", cards_display, self.value())
     }
 }
 
@@ -181,6 +182,11 @@ mod tests {
         hand.add_card(Card { suit: Suit::Diamonds, rank: Rank::King });
         
         let display = format!("{}", hand);
-        assert_eq!(display, "A♥ K♦ (21)");
+        // Test that it contains the expected cards and value
+        assert!(display.contains("A♥"));
+        assert!(display.contains("K♦"));
+        assert!(display.contains("Total: 21"));
+        assert!(display.contains("╔═══╗"));
+        assert!(display.contains("╚═══╝"));
     }
 }

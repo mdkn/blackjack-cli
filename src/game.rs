@@ -28,25 +28,33 @@ impl Game {
     }
 
     fn place_bet(&mut self) -> bool {
-        print!("You have {} chips. Enter your bet (or 0 to quit): ", self.player_chips);
-        io::stdout().flush().unwrap();
+        loop {
+            print!("You have {} chips. Enter your bet (or 0 to quit): ", self.player_chips);
+            io::stdout().flush().unwrap();
 
-        let mut input = String::new();
-        io::stdin().read_line(&mut input).unwrap();
-        
-        match input.trim().parse::<u32>() {
-            Ok(0) => false,
-            Ok(bet) if bet <= self.player_chips => {
-                self.current_bet = bet;
-                true
+            let mut input = String::new();
+            match io::stdin().read_line(&mut input) {
+                Ok(_) => {}
+                Err(_) => {
+                    println!("Error reading input!");
+                    continue;
+                }
             }
-            Ok(_) => {
-                println!("You don't have enough chips!");
-                self.place_bet()
-            }
-            Err(_) => {
-                println!("Invalid input!");
-                self.place_bet()
+            
+            match input.trim().parse::<u32>() {
+                Ok(0) => return false,
+                Ok(bet) if bet <= self.player_chips => {
+                    self.current_bet = bet;
+                    return true;
+                }
+                Ok(_) => {
+                    println!("You don't have enough chips!");
+                    continue;
+                }
+                Err(_) => {
+                    println!("Invalid input! Please enter a number.");
+                    continue;
+                }
             }
         }
     }
@@ -66,12 +74,26 @@ impl Game {
     }
 
     fn display_hands(&self, hide_dealer_card: bool) {
-        println!("\nYour hand: {}", self.player_hand);
+        use crate::display::{render_card, render_hidden_card, render_cards_horizontal};
         
+        println!("\n=== Your Hand ===");
+        println!("{}", self.player_hand);
+        
+        println!("\n=== Dealer's Hand ===");
         if hide_dealer_card {
-            println!("Dealer's hand: {} [Hidden]", self.dealer_hand.cards()[0]);
+            let mut dealer_cards = Vec::new();
+            dealer_cards.push(render_hidden_card());
+            
+            if self.dealer_hand.cards().len() > 1 {
+                for card in &self.dealer_hand.cards()[1..] {
+                    dealer_cards.push(render_card(card));
+                }
+            }
+            
+            let cards_display = render_cards_horizontal(&dealer_cards);
+            println!("{}", cards_display);
         } else {
-            println!("Dealer's hand: {}", self.dealer_hand);
+            println!("{}", self.dealer_hand);
         }
         println!();
     }
