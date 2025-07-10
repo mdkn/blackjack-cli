@@ -120,20 +120,3 @@ jobs:
         asset_name: ${{ matrix.asset_name }}.zip
         asset_content_type: application/zip
 
-  publish-crate:
-    name: Publish to crates.io
-    needs: create-release
-    runs-on: ubuntu-latest
-    if: "!contains(github.ref, 'alpha') && !contains(github.ref, 'beta') && !contains(github.ref, 'rc')"
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Install Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-    
-    - name: Publish to crates.io
-      run: cargo publish --token ${CRATES_IO_TOKEN}
-      env:
-        CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
