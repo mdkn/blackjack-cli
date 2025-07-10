@@ -1,5 +1,5 @@
-use rand::seq::SliceRandom;
 use rand::rng;
+use rand::seq::SliceRandom;
 
 use crate::card::{Card, Rank, Suit};
 
