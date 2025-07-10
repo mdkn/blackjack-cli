@@ -85,9 +85,6 @@ impl Game {
     fn display_hands(&self, hide_dealer_card: bool) {
         use crate::display::{render_card, render_cards_horizontal, render_hidden_card};
 
-        println!("\n=== Your Hand ===");
-        println!("{}", self.player_hand);
-
         println!("\n=== Dealer's Hand ===");
         if hide_dealer_card {
             let mut dealer_cards = Vec::new();
@@ -104,6 +101,9 @@ impl Game {
         } else {
             println!("{}", self.dealer_hand);
         }
+
+        println!("\n=== Your Hand ===");
+        println!("{}", self.player_hand);
         println!();
     }
 
