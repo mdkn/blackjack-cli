@@ -1,5 +1,5 @@
 use rand::seq::SliceRandom;
-use rand::thread_rng;
+use rand::rng;
 
 use crate::card::{Card, Rank, Suit};
 
@@ -39,7 +39,7 @@ impl Deck {
     }
 
     pub fn shuffle(&mut self) {
-        self.cards.shuffle(&mut thread_rng());
+        self.cards.shuffle(&mut rng());
     }
 
     pub fn deal(&mut self) -> Option<Card> {
