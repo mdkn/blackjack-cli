@@ -130,7 +130,9 @@ impl Game {
                     if let Some(card) = self.deck.deal() {
                         self.player_hand.add_card(card);
                         println!("You drew: {card}");
-                        self.display_hands(true);
+                        println!("\n=== Your Hand ===");
+                        println!("{}", self.player_hand);
+                        println!();
                     }
                 }
                 "s" | "stand" => return true,
