@@ -1,0 +1,63 @@
+{
+  "hooks": {
+    "beforeEdit": [
+      {
+        "description": "Check if editing a test file",
+        "command": "echo 'Hook: Checking if {{file_path}} is a test file...'",
+        "condition": "{{file_path}} =~ /test/"
+      },
+      {
+        "description": "Backup file before editing",
+        "command": "cp {{file_path}} {{file_path}}.backup 2>/dev/null || true"
+      }
+    ],
+    "afterEdit": [
+      {
+        "description": "Run rustfmt on edited Rust files",
+        "command": "rustfmt {{file_path}}",
+        "condition": "{{file_path}} =~ /\\.rs$/"
+      },
+      {
+        "description": "Log edit completion",
+        "command": "echo 'Hook: Finished editing {{file_path}}'"
+      }
+    ],
+    "beforeBash": [
+      {
+        "description": "Warn about dangerous commands",
+        "command": "echo 'Hook: Running command: {{command}}'",
+        "blockOnError": false
+      },
+      {
+        "description": "Block rm -rf commands",
+        "command": "if [[ '{{command}}' =~ 'rm -rf' ]]; then echo 'Hook: Blocking dangerous rm -rf command!'; exit 1; fi",
+        "blockOnError": true
+      }
+    ],
+    "afterRead": [
+      {
+        "description": "Log file reads",
+        "command": "echo 'Hook: Read file {{file_path}} ({{line_count}} lines)'"
+      }
+    ],
+    "beforeWrite": [
+      {
+        "description": "Prevent writing to system files",
+        "command": "if [[ '{{file_path}}' =~ ^/etc/ ]] || [[ '{{file_path}}' =~ ^/usr/ ]]; then echo 'Hook: Cannot write to system directories!'; exit 1; fi",
+        "blockOnError": true
+      }
+    ],
+    "afterWrite": [
+      {
+        "description": "Check syntax for new Rust files",
+        "command": "cargo check --quiet",
+        "condition": "{{file_path}} =~ /\\.rs$/",
+        "workingDirectory": "/Users/mdkn/src/blackjack-cli"
+      }
+    ]
+  },
+  "variables": {
+    "projectName": "blackjack-cli",
+    "author": "mdkn"
+  }
+}
